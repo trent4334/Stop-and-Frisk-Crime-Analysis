@@ -1,5 +1,9 @@
 # stop-and-frisk-crime-analysis
 
+This project explores patterns of weapon possession and urban crime using public datasets from New York City and Boston. The analysis includes logistic regression modeling, AUC evaluation, and web scraping. 
+
+> **Note:** This project was originally developed as part of a university machine learning course and has been adapted for portfolio presentation.
+
 ## Project Overview
 
 This project explores crime data through two lenses: police stops in NYC (2008–2016) and recent community-reported crimes in Boston. I used R to conduct logistic regression modeling, evaluate model performance using AUC, and visualize crime trends over time. I also performed web scraping to gather real-world crime data from multiple Boston neighborhoods.
