@@ -1,4 +1,4 @@
-# stop-and-frisk-crime-analysis
+# Stop and Frisk Crime Analysis
 
 This project explores patterns of weapon possession and urban crime using public datasets from New York City and Boston. The analysis includes logistic regression modeling, AUC evaluation, and web scraping. 
 
