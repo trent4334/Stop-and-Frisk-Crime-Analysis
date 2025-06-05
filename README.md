@@ -1,5 +1,9 @@
 ---
-
+title: "NYC Stop-and-Frisk & Boston Crime"
+author: "Trent Yu"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
 ## 📍 Part A – Predictive Modeling of NYC Stop-and-Frisk (2008–2016)
 
 ### 🎯 Objective
