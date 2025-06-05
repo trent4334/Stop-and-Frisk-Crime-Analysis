@@ -3,7 +3,17 @@
 ## 📍 Part A – Predictive Modeling of NYC Stop-and-Frisk (2008–2016)
 
 ### 🎯 Objective
-Build and evaluate logistic regression models to predict if a weapon was found during a stop. Focus is placed on **temporal generalization** and AUC (Area Under Curve) analysis.
+
+This project aims to explore how historical police stop data can be used to **predict the likelihood that a weapon will be found** during a stop-and-frisk encounter in New York City. Specifically, I focused on:
+
+- Building interpretable models using **logistic regression**
+- Evaluating model generalization across time using **temporal cross-validation**
+- Quantifying performance with **AUC (Area Under the ROC Curve)**
+
+The core objective is not just to build a predictive model, but to **investigate how model accuracy degrades over time** due to shifting policies, behaviors, or enforcement patterns — an issue often overlooked in public safety analytics.
+
+This analysis also raises a broader question: _Can a model trained on historic police behavior continue to make fair and accurate predictions in a changing social and legal landscape?_
+
 
 ### 🔨 Data Processing Pipeline (`Stop and Frisk-A.R`)
 
@@ -60,7 +70,19 @@ The steady decline in AUC from 2009 to 2016 highlights how the model becomes inc
 ## 🌆 Part B – Scraping & Analyzing Boston Crime Data
 
 ### 🎯 Objective
-Scrape structured crime reports by hour and neighborhood from [Universal Hub](https://www.universalhub.com/crime/home.html) to analyze temporal crime patterns.
+
+The second part of this project focuses on developing a **custom web scraper** to collect unstructured crime data from a local Boston news aggregator. The goal was to:
+
+- Extract structured information (crime type, neighborhood, time) from semi-structured HTML pages
+- Clean and standardize inconsistent entries and timestamp formats
+- Analyze **hourly crime trends** across neighborhoods and crime types
+
+Ultimately, this part of the project demonstrates how **raw web data can be turned into actionable insights**, especially in contexts where official datasets are limited or delayed. It highlights the value of:
+
+- **Open-source intelligence (OSINT)** for public safety
+- **Temporal pattern detection** for resource allocation
+- **Custom scraping pipelines** for replicable data acquisition across city-specific websites
+
 
 ### 🕸️ Web Scraping Workflow (`Stop and Frisk-B.R`)
 
