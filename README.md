@@ -1,59 +1,117 @@
-# Stop and Frisk Crime Analysis
+---
 
-This project explores patterns of weapon possession and urban crime using public datasets from New York City and Boston. The analysis includes logistic regression modeling, AUC evaluation, and web scraping. 
+## 📊 Part 1: Predictive Modeling on NYC Stop-and-Frisk Data
 
-> **Note:** This project was originally developed as part of a university machine learning course and has been adapted for portfolio presentation.
+Using data from 2008–2016, I built a logistic regression model to predict whether a weapon was found during a police stop. The data was filtered to focus on stops involving a suspected criminal possession of a weapon (`cpw`), and cleaned to ensure completeness.
 
-## Project Overview
+### ✅ Data Preprocessing
 
-This project explores crime data through two lenses: police stops in NYC (2008–2016) and recent community-reported crimes in Boston. I used R to conduct logistic regression modeling, evaluate model performance using AUC, and visualize crime trends over time. I also performed web scraping to gather real-world crime data from multiple Boston neighborhoods.
+- Filtered for `cpw` stops
+- Removed stops with missing values
+- Selected key features (stop circumstances, subject demographics, etc.)
+- Converted time-based features into factors
 
-The goal was to assess the predictive power of stop-and-frisk data across years and to uncover temporal patterns in urban crime reporting.
+### 📁 Data Split Strategy
 
-Key skills demonstrated include:
-- Data cleaning and preprocessing with tidyverse
-- Model training and AUC evaluation with ROCR
-- Time-aware train/test splits
-- Web scraping using rvest and foreach
-- Visualization using ggplot2
+To avoid data leakage in this time-series context:
 
-  - **Logistic Regression + AUC Evaluation** on NYC Stop-and-Frisk data (2008–2016)
-  - **Temporal train/test splits** for realistic model performance
-  - **Data scraping + cleaning** from Universal Hub for recent Boston crime data
-  - **Visualizations** of crime trends by hour and type
+- Train/test split was **time-based** (not random)
+- Training: 2013–2014  
+- Validation: 2015
 
-## Features
+### ⚙️ Model 1 – Trained on 2013–2014
 
-- Written entirely in base R + tidyverse + ROCR + rvest + foreach
-- Modular code structure (each function written in `.R` files)
-- Fully reproducible RMarkdown report
+This model was evaluated using AUC on both the 2013–2014 test set and the held-out 2015 data.
 
-## Key Results
+📊 **AUC Scores**
 
-### 1. Predicting Weapon Possession (NYC Stop-and-Frisk)
-- Logistic regression model trained on 2013–2014 data achieved:
-  - AUC on 2013–2014 test set: **0.81**
-  - AUC on 2015 data: **0.75**
-- Performance drop indicates temporal shifts in policing or suspect behavior.
+![Table 1: AUC values](./screenshots/Screenshot_2025-06-05_at_16.16.17.png)
 
-### 2. AUC Over Time (2009–2016)
-- AUC declined year-over-year when applying a 2008-trained model to later years.
-- Suggests need for regular model retraining due to changing real-world conditions.
+📈 **Insight**: The AUC on the 2015 set was noticeably lower, suggesting that predictive power drops over time due to changing patterns in policing or stop conditions.
 
-### 3. Boston Crime Patterns
-- Web-scraped incident reports from 20+ neighborhoods.
-- Crimes consistently peaked around **9 PM**, lowest around **5–7 AM**.
-- Top crimes: Stabbing, Gunfire, Assault — all follow similar temporal patterns.
+---
 
+### 📉 Model 2 – Trained on 2008, Tested Year-by-Year
 
+A second model was trained only on 2008 data and tested across 2009–2016 to assess generalization over time.
 
-## Files
+📊 **AUC by Year**
 
-- `assignment4_workflow.Rmd`: Source RMarkdown report
-- `assignment4_workflow.pdf`: Knitted PDF report with plots and writeups
-- `assignment4A.R`: Modeling and evaluation functions
-- `assignment4B.R`: Web scraping and visualization functions
+![Table 2: AUC by Year](./screenshots/Screenshot_2025-06-05_at_16.16.28.png)
 
-## Note
+📈 **AUC Trend**
 
-Due to file size, the original dataset (`sqf_08_16.csv`) is not included. Please contact me if you'd like to replicate the analysis.
+![Figure: AUC line plot](./screenshots/Screenshot_2025-06-05_at_16.16.39.png)
+
+🔎 **Observation**: AUC declines steadily after 2008, reflecting possible structural changes in stop patterns or community dynamics.
+
+---
+
+## 🌇 Part 2: Web Scraping and Crime Trend Analysis (Boston)
+
+I scraped reported crime data from [Universal Hub](https://www.universalhub.com/crime/home.html) for 20 neighborhoods in Boston. The dataset includes:
+
+- **Crime type**
+- **Time of day (hour)**
+- **Neighborhood**
+
+### 🧹 Cleaning Highlights
+
+- Converted timestamps to hour (0–23)
+- Standardized neighborhood names (e.g., `back-bay`)
+- Fixed typos like `"Stabbin"` → `"Stabbing"` and `"dangeous"` → `"dangerous"`
+- Encoded blanks as `NA`
+
+📊 **Sample Data Preview**
+
+![Sample scraped table](./screenshots/Screenshot_2025-06-05_at_16.16.17.png)
+
+---
+
+### ⏰ Hourly Crime Patterns
+
+I aggregated all crimes to visualize trends by hour.
+
+📈 **Total Crimes by Hour**
+
+![Hourly crime pattern](./screenshots/Screenshot_2025-06-05_at_16.16.28.png)
+
+🧠 **Observation**: Crime incidents spike in the late evening, peaking around 9 PM, consistent with low-light, high-activity periods.
+
+---
+
+### 🔍 Crime Type Breakdown (Top 6)
+
+To explore specific behaviors, I plotted hourly trends for the six most frequent crimes using `facet_wrap`.
+
+📈 **Hourly Trend by Crime Type**
+
+![Top 6 crime types](./screenshots/Screenshot_2025-06-05_at_16.16.39.png)
+
+🧠 **Takeaway**: Despite some variation, all major crime types show similar peaks in the late evening, reinforcing the importance of time-based policing strategies.
+
+---
+
+## 🎯 Key Learnings
+
+- **Temporal evaluation matters**: For real-world data like policing, random splits can mislead model performance.
+- **Data changes over time**: Even strong models degrade with policy or behavioral shifts.
+- **Scraping real-world data** teaches resilience: Inconsistent structures, typos, and formatting issues are the norm.
+- **Visualization reveals patterns** not obvious from raw tables.
+
+---
+
+## 🧑‍💻 Author
+
+**Trent Yu**  
+Data Analytics Graduate Student | R | Python | Tableau  
+New York, NY  
+📫 [LinkedIn](https://linkedin.com/in/your-profile) • [GitHub](https://github.com/your-profile)
+
+---
+
+## 📌 Next Steps
+
+- Try ensemble models like Random Forest or XGBoost on the stop-and-frisk data
+- Expand the crime scraper to include sentiment analysis from article content
+- Use time series modeling to predict hourly crime rates in Boston neighborhoods
