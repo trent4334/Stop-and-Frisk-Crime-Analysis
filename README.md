@@ -1,6 +1,4 @@
----
 
----
 ## 📍 Part A – Predictive Modeling of NYC Stop-and-Frisk (2008–2016)
 
 ### 🎯 Objective
