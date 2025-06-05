@@ -35,9 +35,6 @@ Build and evaluate logistic regression models to predict if a weapon was found d
   - `sqf_pre_test` (in-time validation)
   - `sqf_2015` (forward generalization)
 
-📊 **AUC Results**
-
-![AUC Table](./screenshots/auc_summary_table.png)
 
 #### Insight:
 AUC was significantly lower on the 2015 data, indicating that even a robust model may generalize poorly across years due to changes in policy, community behavior, or data collection.
