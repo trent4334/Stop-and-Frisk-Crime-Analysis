@@ -4,15 +4,16 @@
 
 ### 🎯 Objective
 
-This project aims to explore how historical police stop data can be used to **predict the likelihood that a weapon will be found** during a stop-and-frisk encounter in New York City. Specifically, I focused on:
+This project explores how historical police stop data can be used to predict the likelihood that a weapon will be found during a stop-and-frisk encounter in New York City. The goal was not only to build an accurate predictive model but also to assess how well such a model generalizes over time.
 
-- Building interpretable models using **logistic regression**
-- Evaluating model generalization across time using **temporal cross-validation**
-- Quantifying performance with **AUC (Area Under the ROC Curve)**
+Specifically, I focused on:
+	•	Building interpretable models using logistic regression
+	•	Evaluating performance across time using temporal cross-validation
+	•	Measuring predictive power with AUC (Area Under the ROC Curve)
 
-The core objective is not just to build a predictive model, but to **investigate how model accuracy degrades over time** due to shifting policies, behaviors, or enforcement patterns — an issue often overlooked in public safety analytics.
+A central aim of this work is to understand how model performance degrades over time due to changes in policing policy, public behavior, and broader societal trends — a challenge often overlooked in public safety analytics.
 
-This analysis also raises a broader question: _Can a model trained on historic police behavior continue to make fair and accurate predictions in a changing social and legal landscape?_
+This analysis also raises a critical question: Can a model trained on past policing patterns continue to make fair and accurate predictions in an evolving legal and social environment?
 
 
 ### 🔨 Data Processing Pipeline (`Stop and Frisk-A.R`)
