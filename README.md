@@ -1,117 +1,126 @@
 ---
 
-## 📊 Part 1: Predictive Modeling on NYC Stop-and-Frisk Data
+## 📍 Part A – Predictive Modeling of NYC Stop-and-Frisk (2008–2016)
 
-Using data from 2008–2016, I built a logistic regression model to predict whether a weapon was found during a police stop. The data was filtered to focus on stops involving a suspected criminal possession of a weapon (`cpw`), and cleaned to ensure completeness.
+### 🎯 Objective
+Build and evaluate logistic regression models to predict if a weapon was found during a stop. Focus is placed on **temporal generalization** and AUC (Area Under Curve) analysis.
 
-### ✅ Data Preprocessing
+### 🔨 Data Processing Pipeline (`Stop and Frisk-A.R`)
 
-- Filtered for `cpw` stops
-- Removed stops with missing values
-- Selected key features (stop circumstances, subject demographics, etc.)
-- Converted time-based features into factors
+#### `clean_sqf()`
+- Filters to `suspected.crime == "cpw"` (criminal possession of a weapon)
+- Removes Precinct 121 and incomplete rows
+- Selects critical columns:
+  - Stop circumstances (e.g., `additional.*`, `stopped.bc.*`)
+  - Subject demographics (age, build, sex, height, weight)
+  - Location/time indicators
+- Converts `time.period` and `precinct` to factors
 
-### 📁 Data Split Strategy
-
-To avoid data leakage in this time-series context:
-
-- Train/test split was **time-based** (not random)
-- Training: 2013–2014  
-- Validation: 2015
-
-### ⚙️ Model 1 – Trained on 2013–2014
-
-This model was evaluated using AUC on both the 2013–2014 test set and the held-out 2015 data.
-
-📊 **AUC Scores**
-
-![Table 1: AUC values](./screenshots/Screenshot_2025-06-05_at_16.16.17.png)
-
-📈 **Insight**: The AUC on the 2015 set was noticeably lower, suggesting that predictive power drops over time due to changing patterns in policing or stop conditions.
+#### `split_sqf_data()`
+- Restricts to data from 2013–2015
+- Splits into:
+  - `sqf_pre_train`: training set (2013–2014)
+  - `sqf_pre_test`: testing set (2013–2014)
+  - `sqf_2015`: held-out set for forward validation
+- Ensures no leakage by **not using random shuffling across years**
 
 ---
 
-### 📉 Model 2 – Trained on 2008, Tested Year-by-Year
+### 🤖 Logistic Regression Models
 
-A second model was trained only on 2008 data and tested across 2009–2016 to assess generalization over time.
+#### `logistic_model_1()`
+- Trained on `sqf_pre_train`  
+- Predicts weapon possession using all variables  
+- Evaluated using **AUC** on:
+  - `sqf_pre_test` (in-time validation)
+  - `sqf_2015` (forward generalization)
 
-📊 **AUC by Year**
+📊 **AUC Results**
 
-![Table 2: AUC by Year](./screenshots/Screenshot_2025-06-05_at_16.16.28.png)
+![AUC Table](./screenshots/auc_summary_table.png)
 
-📈 **AUC Trend**
-
-![Figure: AUC line plot](./screenshots/Screenshot_2025-06-05_at_16.16.39.png)
-
-🔎 **Observation**: AUC declines steadily after 2008, reflecting possible structural changes in stop patterns or community dynamics.
-
----
-
-## 🌇 Part 2: Web Scraping and Crime Trend Analysis (Boston)
-
-I scraped reported crime data from [Universal Hub](https://www.universalhub.com/crime/home.html) for 20 neighborhoods in Boston. The dataset includes:
-
-- **Crime type**
-- **Time of day (hour)**
-- **Neighborhood**
-
-### 🧹 Cleaning Highlights
-
-- Converted timestamps to hour (0–23)
-- Standardized neighborhood names (e.g., `back-bay`)
-- Fixed typos like `"Stabbin"` → `"Stabbing"` and `"dangeous"` → `"dangerous"`
-- Encoded blanks as `NA`
-
-📊 **Sample Data Preview**
-
-![Sample scraped table](./screenshots/Screenshot_2025-06-05_at_16.16.17.png)
+#### Insight:
+AUC was significantly lower on the 2015 data, indicating that even a robust model may generalize poorly across years due to changes in policy, community behavior, or data collection.
 
 ---
 
-### ⏰ Hourly Crime Patterns
+#### `logistic_model_2()`
+- Trains model only on 2008 data  
+- Applies model to each year (2009–2016)  
+- Returns a **yearly AUC trend**
 
-I aggregated all crimes to visualize trends by hour.
 
-📈 **Total Crimes by Hour**
 
-![Hourly crime pattern](./screenshots/Screenshot_2025-06-05_at_16.16.28.png)
+📈 **Trend Visualization**
 
-🧠 **Observation**: Crime incidents spike in the late evening, peaking around 9 PM, consistent with low-light, high-activity periods.
+<img width="1153" alt="Screenshot 2025-06-05 at 16 24 22" src="https://github.com/user-attachments/assets/1ed40378-a502-46af-8904-bbc6eef170d0" />
 
----
-
-### 🔍 Crime Type Breakdown (Top 6)
-
-To explore specific behaviors, I plotted hourly trends for the six most frequent crimes using `facet_wrap`.
-
-📈 **Hourly Trend by Crime Type**
-
-![Top 6 crime types](./screenshots/Screenshot_2025-06-05_at_16.16.39.png)
-
-🧠 **Takeaway**: Despite some variation, all major crime types show similar peaks in the late evening, reinforcing the importance of time-based policing strategies.
+🧠 **Interpretation**:
+The steady decline in AUC from 2009 to 2016 highlights how the model becomes increasingly outdated as data evolves. This supports the importance of retraining and adapting models over time for law enforcement analytics.
 
 ---
 
-## 🎯 Key Learnings
+## 🌆 Part B – Scraping & Analyzing Boston Crime Data
 
-- **Temporal evaluation matters**: For real-world data like policing, random splits can mislead model performance.
-- **Data changes over time**: Even strong models degrade with policy or behavioral shifts.
-- **Scraping real-world data** teaches resilience: Inconsistent structures, typos, and formatting issues are the norm.
-- **Visualization reveals patterns** not obvious from raw tables.
+### 🎯 Objective
+Scrape structured crime reports by hour and neighborhood from [Universal Hub](https://www.universalhub.com/crime/home.html) to analyze temporal crime patterns.
+
+### 🕸️ Web Scraping Workflow (`Stop and Frisk-B.R`)
+
+#### `scrape_data()`
+- Loops through 20 Boston neighborhoods
+- Extracts:
+  - `crime` type
+  - `hour` (from timestamps using `lubridate`)
+  - `nbhd` (standardized to lowercase with hyphens)
+- Cleans known typos and blanks (e.g., `"Stabbin"` → `"Stabbing"`, empty → `NA`)
+- Returns a cleaned tibble with all incidents
+
+
+### ⏰ Visualizing Temporal Crime Patterns
+
+#### Total Crimes by Hour
+
+<img width="1109" alt="Screenshot 2025-06-05 at 16 27 16" src="https://github.com/user-attachments/assets/39b3499b-8dda-42fc-8983-3fa9561a4cf0" />
+
+📌 *Insight*: Peak activity occurs around 9 PM, with a clear rise in late evening hours across neighborhoods.
+
+#### Top 6 Crime Types by Hour (`facet_wrap()` plot)
+
+<img width="1159" alt="Screenshot 2025-06-05 at 16 27 59" src="https://github.com/user-attachments/assets/99f3dea5-a4e7-4a38-885c-ab41b55d3205" />
+
+
+📌 *Insight*: Most crime types follow a similar temporal profile, emphasizing risk concentration at night.
 
 ---
 
-## 🧑‍💻 Author
+## 🧠 Key Learnings
 
-**Trent Yu**  
-Data Analytics Graduate Student | R | Python | Tableau  
-New York, NY  
-📫 [LinkedIn](https://linkedin.com/in/your-profile) • [GitHub](https://github.com/your-profile)
+- **Temporal data splitting** is critical for realistic model evaluation in policy and public safety datasets
+- **Generalization drops over time**, even for logistic models with good internal validation
+- **Web data is messy**: Requires thoughtful cleaning, standardization, and error correction
+- **Crime is time-sensitive**: Time-of-day patterns are consistent across crime types and locations
+
+---
+
+## 💼 Use Cases & Applications
+
+- **Law enforcement**: Improve resource allocation by time/location-based crime predictions
+- **Public policy**: Evaluate stop-and-frisk model reliability over time
+- **Web scraping pipeline**: Scalable for any multi-page, semi-structured data source
 
 ---
 
 ## 📌 Next Steps
 
-- Try ensemble models like Random Forest or XGBoost on the stop-and-frisk data
-- Expand the crime scraper to include sentiment analysis from article content
-- Use time series modeling to predict hourly crime rates in Boston neighborhoods
+- Add **Random Forest** and **XGBoost** models for better nonlinear performance
+- Explore **geospatial analysis** using `leaflet` or `sf`
+- Develop **automated retraining pipeline** to monitor model decay over time
+- Visualize **neighborhood-specific trends** in both NYC and Boston
+
+---
+
+
+## 📝 License
+
+This project is for academic and portfolio purposes. No real-time predictions are made or advised based on the content herein.
